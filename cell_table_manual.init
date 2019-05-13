@@ -1,0 +1,66 @@
+#!/usr/bin/perl
+
+	###  Comment:	Example of the input *.init file for network subsetting
+	###
+	###	NB 1- Remove, comment out, or empty all keys that you do not want to use.
+	###	NB 2- All keys are "optional" or have a default value
+	###	NB 3- Use quotes for file names, and do not change Perl brackets/syntax when changing values
+	###	NB 4- Use hash character "#" to start comment or comment line(s)
+
+{
+  STN_file	=> '/net/nfs/zero/data3/WBM_TrANS/data/flowdirection602.ascii',	# Optional- if running "combine" job
+  STN_proj	=> '',			# Optional- default is "epsg:4326", if omitted
+  basinID_file	=> '',			# Optional- to retain known basin IDs
+
+	#######################################################################
+	###  Build cell table (CT), if "cell_table" key is given
+  cell_table	=> {
+	output_file	=> 'test.csv',	# Optional- Same directory and STN file basename, if omitted
+	CT_csv		=> 1,		# Optional- Flag to build text   SCV version of the CT. Default is 1
+	CT_dat		=> 0,		# Optional- Flag to build binary PDL version of the CT. Default is 0
+	basinIDs	=> 1,		# Optional- Save basin ID file (suffix "_IDs"). Default is 1
+	upstrArea	=> 1,		# Optional- Save upstream area (km2) file (suffix "_upstrArea"). Default is 1
+	endorheic	=> 0		# Optional- Save mask file for endorheic basins (suffix "_EnR"). Default is 0
+		   },
+
+	#######################################################################
+	###  Build subset of the STN, if "subset" key is given
+  subset	=> {
+	preclip		=> {	lonMin	=> -90.0,	lonMax => -70.0,  # Optional- blind pre-clip of the source STN
+				latMin	=>  44.0,	latMax =>  49.0   #	before doing the subsetting (unsafe!)
+			   },
+	output_file	=> 'SUBSET.asc',# Optional- Adds suffix "_sub" to STN file basename, if omitted
+	trim_nodata	=> 1,		# Optional- Flag to trim nodata margins. Default is 1, if omitted
+	basinIDs	=> 1,		# Optional- Save basin ID file. Default is 1
+	upstrArea	=> 1,		# Optional- Save upstream area (km2) file (suffix "_upstrArea"). Default is 1
+	endorheic	=> 0,		# Optional- Save mask file for endorheic basins. Default is 0
+
+		### Priority order of subsetting methods (if multiple methods are listed while only one can be used)-
+			# 1- rectangle; 2- polygon; 3- basinIDs; 4- upstream
+
+	rectangle	=> {	lonMin	=> -80.05,	lonMax => -78.45,
+				latMin	=>  44.838,	latMax =>  45.782,
+				inscribe=>  0 },		# Optional- Flag to inscribe STN to the rectangle
+
+	polygon		=> {	file	=> '/net/nfs/ipswich/raid/atlas/data/masks/country_6min.ascii',
+				shp_var	=> '',			# Required for shape file above
+				polID	=> 233,			# Required- Numeric value (ID) of the polygon or mask
+				inscribe=>  0 },		# Optional- Flag to inscribe STN to the rectangle
+
+	basinID_List	=> [20, 26],				# List of basin IDs to subset
+
+#	upstream	=> {	lon	=> -79.923, lat => 44.977,	# Coords of the point to subset STN for upstream area
+	upstream	=> {	lon	=> -79.940, lat => 44.977,	# Coords of the point to subset STN for upstream area
+				search	=> 0 },		# Optional- Search distance in km. Default is 0
+		   },
+
+	#######################################################################
+	###  Combine a list of STN subsets of the same parent network into a single file
+
+  combine	=> {
+	STN_files	=> [	'/net/nfs/zero/home/WBM_TrANS/data/karsub3.asc',
+				'/net/nfs/zero/home/WBM_TrANS/data/nepal_1km_v2.asc' ],
+	output_file	=>   'COMBO_STN_FILE.asc',		# Grid ASCII output file name (Tip: use extention *.asc)
+		   }
+
+}
