@@ -15,4 +15,4 @@ This script subsets river networks and generates files for:
 - Basin IDs
 - Upstream area
 
-See cell_table_manual.init for a commented example of an input file and options to use this script.
+This function uses an input text file. See cell_table_manual.init for a commented example of an input file and options to use this script.
